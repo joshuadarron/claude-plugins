@@ -1,0 +1,14 @@
+{
+  "name": "joshuadarron-plugins",
+  "description": "Joshua's Claude Code plugins",
+  "owner": {
+    "name": "Joshua Phillips"
+  },
+  "plugins": [
+    {
+      "name": "dev-standards",
+      "source": "./plugins/dev-standards",
+      "description": "Code taste standards and an auto-verdict PR review skill"
+    }
+  ]
+}

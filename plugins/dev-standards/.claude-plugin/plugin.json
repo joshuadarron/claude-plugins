@@ -1,0 +1,8 @@
+{
+  "name": "dev-standards",
+  "description": "Code taste standards and an auto-verdict PR review skill",
+  "version": "1.0.0",
+  "author": {
+    "name": "Joshua Phillips"
+  }
+}
