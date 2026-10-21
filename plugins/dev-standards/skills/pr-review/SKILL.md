@@ -21,8 +21,8 @@ Review the PR, decide, and submit the review. Do not ask for permission to appro
    ```
    bash ${CLAUDE_SKILL_DIR}/checks.sh <pr-number-or-url>
    ```
-   Every line starting with `BLOCKING:` goes into the review as a blocking item, word for word. Do not re-verify what the script already decided.
-3. Read the linked issue(s) in full: `gh issue view <n>`.
+   Every line starting with `BLOCKING:` goes into the review as a blocking item, word for word. Every line starting with `NIT:` goes in as a nit, word for word. Do not re-verify what the script already decided.
+3. Read the linked issue(s), if any, in full: `gh issue view <n>`.
 4. Read the full diff: `gh pr diff <n>`. For any change whose correctness depends on surrounding code, read the whole file, not only the hunk.
 5. Run local checks when the repo is checked out: the project's typecheck, lint, and tests for the touched packages. Failures are blocking.
 6. Go through the checklist below and classify every finding by severity.
@@ -31,8 +31,8 @@ Review the PR, decide, and submit the review. Do not ask for permission to appro
 ## Checklist
 
 **Issue and intent**
-- A linked issue exists (the script checks this).
-- The issue describes the problem, the expected behavior, and enough context to judge a solution. A one-line issue is not ample. Request that it be expanded.
+- A linked issue exists (the script checks this). A missing issue is a nit, not a blocker.
+- When an issue is linked, it describes the problem, the expected behavior, and enough context to judge a solution. A one-line issue is not ample. Request that it be expanded.
 - The change solves what the issue asks for: no less, and no unrelated extras.
 
 **Scope (strict)**
@@ -90,9 +90,9 @@ Review the PR, decide, and submit the review. Do not ask for permission to appro
 
 ## Severity
 
-- **Blocking**: anything the script flags, failing tooling, security issues, breaking logic, scope violations, missing tests for new logic, missing UI screenshots, an unexcused performance issue, a `code-taste` violation that hurts readability in a way a reader would trip on.
+- **Blocking**: anything the script flags as `BLOCKING:` (merge conflicts, failing CI, missing UI screenshots), failing tooling, security issues, breaking logic, scope violations, missing tests for new logic, missing UI screenshots, an unexcused performance issue, a `code-taste` violation that hurts readability in a way a reader would trip on.
 - **Should fix**: real problems that don't make the PR wrong to merge (a weak name, a missing edge-case test, a doc comment that's present but unclear).
-- **Nit**: preference-level polish.
+- **Nit**: preference-level polish, and anything the script flags as `NIT:` (no linked issue, branch behind the base branch).
 
 **Verdict:** any blocking item means request changes. Zero blocking items means approve, with should-fix items and nits included as non-blocking comments.
 

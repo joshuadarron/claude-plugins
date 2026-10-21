@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Deterministic PR checks. Prints BLOCKING:, INFO:, or OK: lines.
+# Deterministic PR checks. Prints BLOCKING:, NIT:, INFO:, or OK: lines.
 # Usage: checks.sh <pr-number-or-url>
 
 set -uo pipefail
@@ -23,10 +23,22 @@ else
   echo "OK: No merge conflicts."
 fi
 
+# Branch up to date with the base branch
+read -r base head_sha pr_url <<< "$(gh pr view "$pr" --json baseRefName,headRefOid,url --jq '"\(.baseRefName) \(.headRefOid) \(.url)"')"
+repo=$(echo "$pr_url" | sed -E 's#https://[^/]+/([^/]+/[^/]+)/pull/.*#\1#')
+behind=$(gh api "repos/$repo/compare/$base...$head_sha" --jq '.behind_by' 2>/dev/null || true)
+if [ -z "$behind" ]; then
+  echo "INFO: Could not determine whether the branch is behind $base."
+elif [ "$behind" -gt 0 ]; then
+  echo "NIT: Branch is $behind commit(s) behind $base. Update it with the base branch."
+else
+  echo "OK: Branch is up to date with $base."
+fi
+
 # Linked issue
 issues=$(gh pr view "$pr" --json closingIssuesReferences --jq '[.closingIssuesReferences[].number] | join(" ")')
 if [ -z "$issues" ]; then
-  echo "BLOCKING: No linked issue. Link one with a closing keyword in the PR body (for example: Closes #123)."
+  echo "NIT: No linked issue. Link one with a closing keyword in the PR body (for example: Closes #123)."
 else
   echo "OK: Linked issue(s): $issues"
 fi
