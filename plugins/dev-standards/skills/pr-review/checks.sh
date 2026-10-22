@@ -62,7 +62,7 @@ if [ -n "$ui_files" ]; then
   body=$(gh pr view "$pr" --json body --jq '.body')
   has_image=$(echo "$body" | grep -Ei '!\[|<img|user-attachments|\.(png|jpe?g|gif|webp)' || true)
   if [ -z "$has_image" ]; then
-    echo "BLOCKING: UI files changed with no screenshots in the PR body. Add before and after screenshots. Files:"
+    echo "NIT: UI files changed with no screenshots in the PR body. Add before and after screenshots. Files:"
     echo "$ui_files" | sed 's/^/  - /'
   else
     echo "OK: UI files changed and the PR body includes images."

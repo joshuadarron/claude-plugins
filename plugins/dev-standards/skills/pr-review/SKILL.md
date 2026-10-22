@@ -41,7 +41,7 @@ Review the PR, decide, and submit the review. Do not ask for permission to appro
 - Formatting churn or renames in untouched code count as unrelated changes.
 
 **UI**
-- If the change adds UI or changes how anything looks and the PR body has no screenshots (the script checks this), request before and after screenshots. For a new UI, request screenshots of each new state (empty, loading, error, populated).
+- If the change adds UI or changes how anything looks and the PR body has no screenshots (the script checks this), request before and after screenshots. For a new UI, request screenshots of each new state (empty, loading, error, populated). Missing screenshots are a nit, not a blocker.
 
 **Correctness**
 - Breaking logic: wrong conditions, off-by-one errors, unhandled states, race conditions, a changed contract that existing callers rely on.
@@ -90,9 +90,9 @@ Review the PR, decide, and submit the review. Do not ask for permission to appro
 
 ## Severity
 
-- **Blocking**: anything the script flags as `BLOCKING:` (merge conflicts, failing CI, missing UI screenshots), failing tooling, security issues, breaking logic, scope violations, missing tests for new logic, missing UI screenshots, an unexcused performance issue, a `code-taste` violation that hurts readability in a way a reader would trip on.
+- **Blocking**: anything the script flags as `BLOCKING:` (merge conflicts, failing CI), failing tooling, security issues, breaking logic, scope violations, missing tests for new logic, an unexcused performance issue, a `code-taste` violation that hurts readability in a way a reader would trip on.
 - **Should fix**: real problems that don't make the PR wrong to merge (a weak name, a missing edge-case test, a doc comment that's present but unclear).
-- **Nit**: preference-level polish, and anything the script flags as `NIT:` (no linked issue, branch behind the base branch).
+- **Nit**: preference-level polish, and anything the script flags as `NIT:` (no linked issue, branch behind the base branch, missing UI screenshots).
 
 **Verdict:** any blocking item means request changes. Zero blocking items means approve, with should-fix items and nits included as non-blocking comments.
 
