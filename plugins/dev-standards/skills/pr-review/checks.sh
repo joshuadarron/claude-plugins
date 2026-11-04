@@ -74,5 +74,5 @@ stats=$(gh pr view "$pr" --json additions,deletions,changedFiles --jq '"\(.addit
 read -r additions deletions changed <<< "$stats"
 echo "INFO: Size: +$additions -$deletions across $changed files."
 if [ $((additions + deletions)) -gt 800 ]; then
-  echo "INFO: Over 800 changed lines. Evaluate whether it must be split."
+  echo "INFO: Over 800 changed lines. Evaluate whether it should be split (should-fix, not blocking)."
 fi

@@ -35,9 +35,9 @@ Review the PR, decide, and submit the review. Do not ask for permission to appro
 - When an issue is linked, it describes the problem, the expected behavior, and enough context to judge a solution. A one-line issue is not ample. Request that it be expanded.
 - The change solves what the issue asks for: no less, and no unrelated extras.
 
-**Scope (strict)**
-- The PR does one thing. If it mixes concerns (a feature plus an unrelated refactor, two features, a fix plus a dependency upgrade), request changes and name how to split it, listing which files or changes belong in each PR.
-- A PR that is too large to review with confidence must be split, even if it's all one concern. Propose split points (for example: types and data layer first, then logic, then UI).
+**Scope**
+- The PR does one thing. If it mixes concerns (a feature plus an unrelated refactor, two features, a fix plus a dependency upgrade), name how to split it, listing which files or changes belong in each PR. Splitting is a should-fix, not a blocker.
+- A PR that is too large to review with confidence should be split, even if it's all one concern. Propose split points (for example: types and data layer first, then logic, then UI). This is also a should-fix.
 - Formatting churn or renames in untouched code count as unrelated changes.
 
 **UI**
@@ -90,8 +90,8 @@ Review the PR, decide, and submit the review. Do not ask for permission to appro
 
 ## Severity
 
-- **Blocking**: anything the script flags as `BLOCKING:` (merge conflicts, failing CI), failing tooling, security issues, breaking logic, scope violations, missing tests for new logic, an unexcused performance issue, a `code-taste` violation that hurts readability in a way a reader would trip on.
-- **Should fix**: real problems that don't make the PR wrong to merge (a weak name, a missing edge-case test, a doc comment that's present but unclear).
+- **Blocking**: anything the script flags as `BLOCKING:` (merge conflicts, failing CI), failing tooling, security issues, breaking logic, missing tests for new logic, an unexcused performance issue, a `code-taste` violation that hurts readability in a way a reader would trip on.
+- **Should fix**: real problems that don't make the PR wrong to merge (a PR that should be split for scope or size, a weak name, a missing edge-case test, a doc comment that's present but unclear).
 - **Nit**: preference-level polish, and anything the script flags as `NIT:` (no linked issue, branch behind the base branch, missing UI screenshots).
 
 **Verdict:** any blocking item means request changes. Zero blocking items means approve, with should-fix items and nits included as non-blocking comments.
@@ -116,7 +116,7 @@ One or two sentences on what the PR does and the overall state.
 **Nits**
 - `path/to/file.ts:12` Concrete ask.
 
-**Split plan** (only when scope is blocking)
+**Split plan** (only when a split is recommended)
 - PR 1: what goes in it.
 - PR 2: what goes in it.
 ```
