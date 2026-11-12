@@ -1,0 +1,122 @@
+name: Release skills
+
+# Pull requests: validate changed plugins and require a version bump.
+# Pushes to main: publish a GitHub release (with one ZIP per skill) for every
+# changed plugin whose version does not have a release yet.
+
+on:
+  pull_request:
+    paths:
+      - "plugins/**"
+  push:
+    branches: [main]
+    paths:
+      - "plugins/**"
+  workflow_dispatch:
+    inputs:
+      plugin:
+        description: "Plugin folder name to release (for example daily-brief)"
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  validate:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Find changed plugins
+        id: changed
+        run: |
+          base="${{ github.event.pull_request.base.sha }}"
+          plugins="$(git diff --name-only "$base" HEAD -- plugins/ | cut -d/ -f2 | sort -u | tr '\n' ' ')"
+          echo "plugins=$plugins" >> "$GITHUB_OUTPUT"
+          echo "Changed plugins: $plugins"
+
+      - name: Validate and check version bump
+        run: |
+          base="${{ github.event.pull_request.base.sha }}"
+          for plugin in ${{ steps.changed.outputs.plugins }}; do
+            manifest="plugins/$plugin/.claude-plugin/plugin.json"
+            if [ ! -f "$manifest" ]; then
+              echo "Skipping $plugin (no plugin.json, probably removed)"
+              continue
+            fi
+
+            if [ -d "plugins/$plugin/skills" ]; then
+              bash scripts/package-skills.sh "plugins/$plugin" "dist/$plugin"
+            fi
+
+            head_version="$(jq -r .version "$manifest")"
+            if ! git cat-file -e "$base:$manifest" 2>/dev/null; then
+              echo "$plugin is new at $head_version"
+              continue
+            fi
+
+            base_version="$(git show "$base:$manifest" | jq -r .version)"
+            if [ "$head_version" = "$base_version" ]; then
+              echo "::error file=$manifest::$plugin changed but its version is still $head_version. Bump the version in plugin.json."
+              exit 1
+            fi
+            echo "$plugin: $base_version -> $head_version"
+          done
+
+  release:
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Find plugins to release
+        id: changed
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            plugins="${{ github.event.inputs.plugin }}"
+          else
+            before="${{ github.event.before }}"
+            if [ "$before" = "0000000000000000000000000000000000000000" ] || ! git cat-file -e "$before" 2>/dev/null; then
+              plugins="$(ls plugins | tr '\n' ' ')"
+            else
+              plugins="$(git diff --name-only "$before" HEAD -- plugins/ | cut -d/ -f2 | sort -u | tr '\n' ' ')"
+            fi
+          fi
+          echo "plugins=$plugins" >> "$GITHUB_OUTPUT"
+          echo "Plugins to check: $plugins"
+
+      - name: Package and publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          for plugin in ${{ steps.changed.outputs.plugins }}; do
+            manifest="plugins/$plugin/.claude-plugin/plugin.json"
+            if [ ! -f "$manifest" ] || [ ! -d "plugins/$plugin/skills" ]; then
+              echo "Skipping $plugin (no plugin.json or no skills folder)"
+              continue
+            fi
+
+            version="$(jq -r .version "$manifest")"
+            tag="$plugin-v$version"
+            if gh release view "$tag" > /dev/null 2>&1; then
+              echo "Release $tag already exists, skipping"
+              continue
+            fi
+
+            bash scripts/package-skills.sh "plugins/$plugin" "dist/$plugin"
+
+            notes="Upload each ZIP in Claude under Customize > Skills > + > Create skill > Upload a skill.
+
+          Claude Code: npx skills add ${{ github.repository }} --skill <name> -a claude-code -g"
+
+            gh release create "$tag" dist/"$plugin"/*.zip \
+              --title "$plugin v$version" \
+              --notes "$notes" \
+              --target "${{ github.sha }}"
+            echo "Published $tag"
+          done
