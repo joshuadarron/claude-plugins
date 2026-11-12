@@ -1,0 +1,9 @@
+{
+  "name": "daily-brief",
+  "version": "1.0.0",
+  "description": "Nightly daily work brief plus a shared Notion tracker format (daily-brief and tracker-update skills).",
+  "author": {
+    "name": "Joshua Phillips"
+  },
+  "license": "MIT"
+}
