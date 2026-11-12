@@ -9,6 +9,11 @@
       "name": "dev-standards",
       "source": "./plugins/dev-standards",
       "description": "Code taste standards and an auto-verdict PR review skill"
+    },
+    {
+      "name": "daily-brief",
+      "source": "./plugins/daily-brief",
+      "description": "Nightly daily work brief plus a shared Notion tracker format"
     }
   ]
 }

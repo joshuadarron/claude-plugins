@@ -1,7 +1,7 @@
 name: Release skills
 
 # Pull requests: validate changed plugins and require a version bump.
-# Pushes to main: publish a GitHub release (with one ZIP per skill) for every
+# Pushes to master: publish a GitHub release (with one ZIP per skill) for every
 # changed plugin whose version does not have a release yet.
 
 on:
@@ -9,7 +9,7 @@ on:
     paths:
       - "plugins/**"
   push:
-    branches: [main]
+    branches: [master]
     paths:
       - "plugins/**"
   workflow_dispatch:
